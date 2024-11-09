@@ -12,6 +12,8 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+    <link href="{{ asset('assets/fontawesome-free-6.6.0-web/css/all.min.css') }}" rel="stylesheet">
+
     <!-- Styles / Scripts -->
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -186,20 +188,75 @@
                     // Recorrer los archivos y agregarlos a la lista en el frontend
                     files.forEach(file => {
                         const listItem = document.createElement('li');
+                        listItem.classList.add('list-group-item', 'd-flex', 'justify-content-between',
+                            'align-items-center', 'my-1'); // Clases de Bootstrap
 
-                        // Crear un enlace para descargar el archivo
+                        // Crear el icono basado en la extensión
+                        const fileExtension = file.split('.').pop()
+                    .toLowerCase(); // Obtener la extensión del archivo
+                        const icon = getIconForExtension(fileExtension); // Función para obtener el ícono
+
+                        // Crear el ícono de la extensión
+                        const iconElement = document.createElement('i');
+                        iconElement.classList.add('fas', icon); // Añadir la clase de Font Awesome al ícono
+
+                        // Crear el texto para mostrar el nombre del archivo
+                        const fileName = document.createTextNode(file); // Nombre del archivo
+
+                        // Añadir el ícono y el nombre del archivo al item
+                        const iconContainer = document.createElement('span');
+                        iconContainer.classList.add('me-2'); // Margen derecho para el ícono
+                        iconContainer.appendChild(iconElement);
+
+                        listItem.appendChild(iconContainer);
+                        listItem.appendChild(fileName);
+
+                        // Crear el enlace para descargar el archivo
                         const downloadLink = document.createElement('a');
-                        downloadLink.href = `/download/${sistema}/${file}`; // Ruta para descargar el archivo
-                        downloadLink.textContent = `Descargar ${file}`; // El texto del enlace de descarga
+                        downloadLink.href = '/download/' + sistema + '/' + file; // Ruta para descargar el archivo
+                        downloadLink.classList.add('btn', 'btn-primary',
+                        'btn-sm'); // Clases para el botón de descarga
+                        downloadLink.textContent = 'Descargar';
 
-                        // Agregar el enlace al item de la lista
+                        // Agregar el enlace de descarga al item
                         listItem.appendChild(downloadLink);
 
-                        // Agregar el item de la lista al contenedor
+                        // Añadir el item a la lista
                         filesList.appendChild(listItem);
                     });
                 })
                 .catch(error => console.error('Error al obtener los archivos:', error));
+        }
+
+        // Función para devolver el ícono adecuado según la extensión
+        function getIconForExtension(extension) {
+            const icons = {
+                'pdf': 'fa-file-pdf',
+                'zip': 'fa-file-archive',
+                'doc': 'fa-file-word',
+                'docx': 'fa-file-word',
+                'jpg': 'fa-file-image',
+                'jpeg': 'fa-file-image',
+                'png': 'fa-file-image',
+                'txt': 'fa-file-alt',
+                'mp4': 'fa-file-video',
+                'mp3': 'fa-file-audio',
+                'exe': 'fa-file-executable',
+                'ppt': 'fa-file-powerpoint',
+                'pptx': 'fa-file-powerpoint',
+                'csv': 'fa-file-csv',
+                'html': 'fa-file-code',
+                'js': 'fa-file-code',
+                'css': 'fa-file-code',
+                'json': 'fa-file-code',
+                'php': 'fa-file-code',
+                'xlsx': 'fa-file-excel',
+                'xls': 'fa-file-excel',
+                'default': 'fa-file'
+            };
+
+            // Si la extensión existe en el objeto, devuelve el ícono; de lo contrario, usa un ícono genérico
+            return icons[extension] || icons['default'];
         }
 
 
