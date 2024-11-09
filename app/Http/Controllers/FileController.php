@@ -91,7 +91,7 @@ class FileController extends Controller
         // Especifica el disco y la carpeta que deseas listar
         $directory = 'your-directory-name'; // Por ejemplo, 'uploads'
 
-         // Obtener los archivos del directorio
+        // Obtener los archivos del directorio
         $files = Storage::disk($disk)->files(); // Usar el disco dinámicamente
 
         // Si quieres obtener también directorios (no solo archivos)
@@ -104,5 +104,24 @@ class FileController extends Controller
         return response()->json([
             'files' => $files,
         ]);
+    }
+
+    public function downloadFile(Request $request, $sistema, $filename)
+    {
+        // Determina qué disco usar basado en el sistema
+        $disk = $sistema === 'Windows' ? 'windows' : 'linux';
+
+        // Especifica la carpeta dentro del disco (por ejemplo, "uploads")
+        $directory = ''; // Asegúrate de que esta carpeta exista dentro de 'windows' o 'linux'
+
+        // Verificar si el archivo existe en el disco
+        if (Storage::disk($disk)->exists($directory . '/' . $filename)) {
+            // Devuelve el archivo para descargarlo
+            return Storage::disk($disk)->download($directory . '/' . $filename);
+        } else {
+            return response()->json([
+                'error' => 'Archivo no encontrado',
+            ], 404);
+        }
     }
 }

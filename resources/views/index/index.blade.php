@@ -54,9 +54,9 @@
 
                 <input type="file" id="fileInputLinux" style="display: none;"
                     onchange="subirArchivo(event, 'Linux')">
-                    <ul id="filesListLinux">
-                        <!-- Los archivos serán listados aquí -->
-                    </ul>
+                <ul id="filesListLinux">
+                    <!-- Los archivos serán listados aquí -->
+                </ul>
             </div>
 
             <div class="container mx-auto p-4 text-center">
@@ -66,9 +66,9 @@
 
                 <input type="file" id="fileInputWindows" style="display: none;"
                     onchange="subirArchivo(event, 'Windows')">
-                    <ul id="filesListWindows">
-                        <!-- Los archivos serán listados aquí -->
-                    </ul>
+                <ul id="filesListWindows">
+                    <!-- Los archivos serán listados aquí -->
+                </ul>
             </div>
         </div>
     </div>
@@ -178,20 +178,30 @@
                 .then(response => response.json())
                 .then(data => {
                     const files = data.files;
-                    const filesList = document.getElementById(
-                    'filesList' + sistema); // Contenedor en tu HTML para mostrar los archivos
+                    const filesList = document.getElementById('filesList' +
+                    sistema); // Contenedor en tu HTML para mostrar los archivos
 
                     filesList.innerHTML = ''; // Limpiar antes de agregar nuevos archivos
 
                     // Recorrer los archivos y agregarlos a la lista en el frontend
                     files.forEach(file => {
                         const listItem = document.createElement('li');
-                        listItem.textContent = file; // Puedes agregar un enlace para cada archivo si lo deseas
+
+                        // Crear un enlace para descargar el archivo
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = `/download/${sistema}/${file}`; // Ruta para descargar el archivo
+                        downloadLink.textContent = `Descargar ${file}`; // El texto del enlace de descarga
+
+                        // Agregar el enlace al item de la lista
+                        listItem.appendChild(downloadLink);
+
+                        // Agregar el item de la lista al contenedor
                         filesList.appendChild(listItem);
                     });
                 })
                 .catch(error => console.error('Error al obtener los archivos:', error));
         }
+
 
         // Llama a la función para obtener los archivos al cargar la página, por ejemplo, para el sistema Linux
         window.onload = function() {

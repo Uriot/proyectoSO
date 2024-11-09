@@ -11,3 +11,5 @@ Route::get('/', function () {
 Route::post('/submit', [FileController::class, 'submitFile']);
 
 Route::get('/get-files',[FileController::class, 'getFiles']);
+
+Route::get('/download/{sistema}/{filename}', [FileController::class, 'downloadFile']);
