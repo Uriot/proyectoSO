@@ -54,6 +54,9 @@
 
                 <input type="file" id="fileInputLinux" style="display: none;"
                     onchange="subirArchivo(event, 'Linux')">
+                    <ul id="filesListLinux">
+                        <!-- Los archivos serán listados aquí -->
+                    </ul>
             </div>
 
             <div class="container mx-auto p-4 text-center">
@@ -63,6 +66,9 @@
 
                 <input type="file" id="fileInputWindows" style="display: none;"
                     onchange="subirArchivo(event, 'Windows')">
+                    <ul id="filesListWindows">
+                        <!-- Los archivos serán listados aquí -->
+                    </ul>
             </div>
         </div>
     </div>
@@ -135,12 +141,14 @@
                     // Verifica la respuesta
                     console.log('Respuesta del servidor:', data);
                     modalBody.textContent = data.message ||
-                    data.error; // Asegúrate de que el campo "message" esté correctamente definido
+                        data.error; // Asegúrate de que el campo "message" esté correctamente definido
 
                     // Espera a que el contenido esté actualizado antes de abrir el modal
                     setTimeout(() => {
                         openModal(); // Abre el modal después de actualizar el contenido
                     }, 100); // Un pequeño retraso para asegurarse de que el contenido se cargue
+                    obtenerArchivos('Linux');
+                    obtenerArchivos('Windows');
                 })
                 .catch(error => {
                     console.error('Error al enviar el archivo:', error);
@@ -163,6 +171,33 @@
             modalBody.textContent = '';
 
         }
+
+        // Función para obtener los archivos de la carpeta
+        function obtenerArchivos(sistema) {
+            fetch('/get-files?sistema=' + sistema) // Enviar el parámetro 'sistema' en la URL
+                .then(response => response.json())
+                .then(data => {
+                    const files = data.files;
+                    const filesList = document.getElementById(
+                    'filesList' + sistema); // Contenedor en tu HTML para mostrar los archivos
+
+                    filesList.innerHTML = ''; // Limpiar antes de agregar nuevos archivos
+
+                    // Recorrer los archivos y agregarlos a la lista en el frontend
+                    files.forEach(file => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = file; // Puedes agregar un enlace para cada archivo si lo deseas
+                        filesList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error al obtener los archivos:', error));
+        }
+
+        // Llama a la función para obtener los archivos al cargar la página, por ejemplo, para el sistema Linux
+        window.onload = function() {
+            obtenerArchivos('Linux');
+            obtenerArchivos('Windows');
+        };
     </script>
     @vite('resources/js/app.js')
 </body>

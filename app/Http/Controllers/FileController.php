@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-
 use Illuminate\Http\Request;
 
 class FileController extends Controller
@@ -72,5 +72,37 @@ class FileController extends Controller
                 'details' => $e->getMessage()
             ], 500);
         }
+    }
+
+
+    public function getFiles(Request $request)
+    {
+
+        $request->validate([
+            'sistema' => 'required|string', // Valida que el sistema sea Linux o Windows
+        ]);
+
+        $sistema = $request->input('sistema');
+        // Determina qué disco usar basado en el sistema
+        $disk = $sistema === 'Windows' ? 'windows' : 'linux';
+
+
+
+        // Especifica el disco y la carpeta que deseas listar
+        $directory = 'your-directory-name'; // Por ejemplo, 'uploads'
+
+         // Obtener los archivos del directorio
+        $files = Storage::disk($disk)->files(); // Usar el disco dinámicamente
+
+        // Si quieres obtener también directorios (no solo archivos)
+        // $files = Storage::disk('local')->allFiles($directory);
+        // Si quieres obtener solo los directorios, puedes usar:
+        // $directories = Storage::disk('local')->allDirectories($directory);
+
+
+        // Devuelve los archivos en formato JSON para usarlos en el frontend
+        return response()->json([
+            'files' => $files,
+        ]);
     }
 }

@@ -9,3 +9,5 @@ Route::get('/', function () {
 
 
 Route::post('/submit', [FileController::class, 'submitFile']);
+
+Route::get('/get-files',[FileController::class, 'getFiles']);
